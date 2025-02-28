@@ -1,4 +1,4 @@
-
+//------------------------------Variables------------------------------------------------
 int k = 12; //Scale factor for distance to degrees
 int rm = 0; //right motor
 int lm = 3; //left motor
@@ -83,15 +83,116 @@ int clamp(int var, int min, int max) {
     return var;
 }
 //------------------------------ Pause --------------------------------------------
-void p(int time) {
-    pause(time);
+//p defined(pause)
+void p(double time) {
+	pause(time);
 }
 
-void pause(int time) {
-    motor(rm,0);
-    motor(lm,0);
-    msleep(time);
+//pause defined
+void pause(double time) {
+	double sTime = seconds();
+    while (seconds() - sTime < time) {
+    	ao();
+    }
 }
 
 //------------------------------ Camera -------------------------------------------
+//load_cam turns on camera
+
+//lc defined (load_cam)
+void lc(char* name, int logitech) { //char* name?, int logitech?
+load_cam(name, logitech);
+}
+
+//load_cam defined
+void load_cam(char* name, int logitech) { 
+    logitech = clamp(logitech, 0, 1);
+	camera_load_config(name); 
+    if (logitech) {
+    	camera_open_black();
+    } else {
+    	camera_open();
+    }
     
+    for (int i = 0; i < 10; i++) { //
+    	camera_update(); //Update cameras screen
+        p(0.01);
+    }
+}
+
+
+
+int rotate_till(int channel, int size, int resolution, int direction) {
+    cmpc(0);
+    direction = clamp(direction, -1, 1);
+	while (1) {
+        rectangle o = get_object_bbox(channel, 0);
+        if (o.width * o.height > size) {
+            int x = o.ulx + o.width/2;
+            if (abs((x - resolution/2)) < resolution/10){
+                return gmpc(0);
+            }
+        }
+        
+        double sTime = seconds();
+        while (seconds() - sTime <= 0.2) {
+        	mav(0, -500 * direction);
+            mav(3, 500 * direction);
+        }
+        p(0.01);
+        camera_update();
+    }
+}
+
+//------------------------------ Servos ------------------------------ 
+
+//ss defined (slow servo)
+void ss(int port, int position, int speed) { //(servo port, ending position of servo, speed)
+	slow_servo(port, position, speed);
+}
+
+//slow_servo defined (slow servo)
+void slow_servo(int port, int position, int speed) { //(servo port, ending position, speed)
+	if (get_servo_position(port)  == position) { //If servo position of "servo port" equals "position"
+    	return; //Then end the code
+    }
+    
+    int starting = get_servo_position(port); //"starting" position equals servo position of "port"
+    int counter = 0;
+    
+    while((starting + counter)/speed != position/speed) { //While ("starting position" + "counter" (Which starts at 0 doesn't equal "position"(ex 200) /"speed" ex(50)->4)
+    	if (position - starting > 0) { //if current position - starting position is more than 0
+    		counter  += speed; // then counter equals counter + speed 
+    	}
+        if (position - starting < 0) { //if ending position - starting position is less than - then 
+        	counter -= speed; //counter equals counter minus speed
+        }
+        
+        set_servo_position(port, starting + counter); 
+        msleep(10);
+    }
+    set_servo_position(port, position);
+    msleep(100);
+}
+
+//------------------------------ Color Detection ------------------------------ 
+
+//detect_color defined (detect color)
+int detect_color(int size) {
+	for (int i = 0; i < get_channel_count(); i++) { //(sets i to 0; final value of i is less than get_channel_count(); i+1)
+    	for (int j = 0; j < get_object_count(i); j++) {
+        	rectangle o = get_object_bbox(i, j);
+            if (o.width * o.height > size) {
+            	return i;
+            }
+        }
+    }
+}
+
+//------------------------------ Lineup ------------------------------ 
+void lineup(int port1, int port2) {
+	while (digital(port1) == 0 || digital(port2) == 0) {
+    	mav(0, -500);
+        mav(3, -500);
+    }
+}
