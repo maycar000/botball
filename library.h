@@ -16,7 +16,7 @@ void forward(int distance) {
 }
 
 //b is defined (backward)
-void b(int distance) {
+void b(int distance) { //Distance in ticks
         backward(distance);
 }
 
@@ -50,7 +50,7 @@ v(-1000, 1000, lm, degree * k); //Right motor -1000 speed, left motor 1000 speed
 //------------------------------------Extra------------------------------------
 //v is defined (velocity)
 void v(int right, int left, int driver, int distance){//(Right motor speed (-1000 to 1000), Left motor (speed -1000 to 1000), wheel to track(0,3), distance 
-     driver = clamp(driver, rm, lm);
+     driver = clamp(driver, rm, lm); 
     right = clamp(right, -1000, 1000);
     left = clamp(left, -1000, 1000);
 
@@ -72,12 +72,13 @@ while (abs(gmpc(driver)) < distance) { //While absolute value of driver(0 or 3) 
 
 
 //Clamp is defined
-int clamp(int var, int min, int max) {
-    if (var > max) {
+//Clamp makes sure the value doesn't go over a certain threshold
+int clamp(int var, int min, int max) { //Variable clamp(vaiable, minimum, maximum value)
+    if (var > max) { // if variable is more than max then return value of max
         return max;
     }
     
-    if (var < min) {
+    if (var < min) { //If variable is less then minimum then return value of min
         return min;
     }
     return var;
@@ -89,7 +90,7 @@ void p(double time) {
 }
 
 //pause defined
-void pause(double time) {
+void pause(double time) { //double time is a type of variable. It holds either a decimal or interger. Meaning you could pause for half a second or 2 tenths, etc.
 	double sTime = seconds();
     while (seconds() - sTime < time) {
     	ao();
@@ -100,7 +101,7 @@ void pause(double time) {
 //load_cam turns on camera
 
 //lc defined (load_cam)
-void lc(char* name, int logitech) { //char* name?, int logitech?
+void lc(char* name, int logitech) { //for example load_cam("botball.conf",1) 1 is 1 or 0 for true or false
 load_cam(name, logitech);
 }
 
@@ -114,7 +115,7 @@ void load_cam(char* name, int logitech) {
     	camera_open();
     }
     
-    for (int i = 0; i < 10; i++) { //
+    for (int i = 0; i < 10; i++) { //(sets i to 0; while final value of i is less than 10; i equals i + 1)
     	camera_update(); //Update cameras screen
         p(0.01);
     }
@@ -122,12 +123,12 @@ void load_cam(char* name, int logitech) {
 
 
 
-int rotate_till(int channel, int size, int resolution, int direction) {
+int rotate_till(int channel, int size, int resolution, int direction) { //direction is 1 (Right) or 0 (Left)
     cmpc(0);
     direction = clamp(direction, -1, 1);
 	while (1) {
-        rectangle o = get_object_bbox(channel, 0);
-        if (o.width * o.height > size) {
+        rectangle o = get_object_bbox(channel, 0); 
+        if (o.width * o.height > size) { 
             int x = o.ulx + o.width/2;
             if (abs((x - resolution/2)) < resolution/10){
                 return gmpc(0);
