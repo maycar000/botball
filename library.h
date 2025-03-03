@@ -1,3 +1,4 @@
+#include <kipr/wombat.h>
 //------------------------------Variables------------------------------------------------
 int k = 12; //Scale factor for distance to degrees
 int rm = 0; //right motor
@@ -6,7 +7,7 @@ int lm = 3; //left motor
 
 //------------------------------Forward & Backward------------------------------------------
 //f is defined (forward)
-void f(int distance {
+void f(int distance) {
   forward(distance);
 }
 
@@ -38,7 +39,7 @@ void turnL(int degree) {
 }
 
 //r is defined (right turn)
-void r(); {
+void r() {
 turnR(degree);
 }
 
