@@ -1,12 +1,10 @@
-#include <kipr/library.h>
-
 void f(int distance);
 void forward(int distance);
 void b(int distance);
 void backward(int distance);
 void l(int degree);
 void turnL(int degree);
-void r();
+void r(int degree);
 void turnR(int degree);
 void v(int right, int left, int driver, int distance);
 void p(double time);
