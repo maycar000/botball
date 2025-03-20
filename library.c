@@ -1,6 +1,6 @@
 #include <kipr/wombat.h>
 //------------------------------Variables------------------------------------------------
-int k = 12; //Scale factor for distance to degrees
+int k = 20; //Scale factor for distance to degrees
 int rm = 0; //right motor
 int lm = 3; //left motor
 
@@ -39,14 +39,14 @@ void turnL(int degree) {
 }
 
 //r is defined (right turn)
-void r() {
+void r(int degree) {
 turnR(degree);
 }
 
 //turnR is defined (right turn)
 void turnR(int degree) {//12 might need to be changed
 v(-1000, 1000, lm, degree * k); //Right motor -1000 speed, left motor 1000 speed, degrees (0-360) *12 (12 is scale factor for distance to degrees)
-
+}
 
 //------------------------------------Extra------------------------------------
 //v is defined (velocity)
@@ -55,21 +55,22 @@ void v(int right, int left, int driver, int distance){//(Right motor speed (-100
     right = clamp(right, -1000, 1000);
     left = clamp(left, -1000, 1000);
 
-cmpc(driver); //clear position counter of driver (0 or 3)
-int majority = (distance * 4) / 5; //distance = 20%
-while (abs(gmpc(driver)) < majority) { //While absolute value of driver(0 or 3) motor position is less than 20% of original distance
-mav(rm,right); //motor 0 goes at mean average velocity of variable "right" (speed -1000 to 1000) 
-mav(lm,left); //motor 3 goes at mean average velocity of variable "left" (speed -1000 to 1000)
-}
-
-
-while (abs(gmpc(driver)) < distance) { //While absolute value of driver(0 or 3) motor position is less than distance
-        mav(0, right/2); //mean average velocity of 0 is variable "right" (speed -1000 to 1000)
-        mav(3, left/2); //mean average velocity of 0 is variable "left" (speed -1000 to 1000)
+    cmpc(driver); //clear position counter of driver (0 or 3)
+    int majority = (distance * 4) / 5; //distance = 20%
+    while (abs(gmpc(driver)) < majority) { //While absolute value of driver(0 or 3) motor position is less than 20% of original distance
+    mav(rm,right); //motor 0 goes at mean average velocity of variable "right" (speed -1000 to 1000) 
+    mav(lm,left); //motor 3 goes at mean average velocity of variable "left" (speed -1000 to 1000)
     }
-    mav(lm, -left); //mean average velocity is opposite of left (speed -1000 to 1000)
-    ao(); //All off
-}
+
+
+    while (abs(gmpc(driver)) < distance) { //While absolute value of driver(0 or 3) motor position is less than distance
+            mav(0, right/2); //mean average velocity of 0 is variable "right" (speed -1000 to 1000)
+            mav(3, left/2); //mean average velocity of 0 is variable "left" (speed -1000 to 1000)
+        }
+        mav(lm, -left); //mean average velocity is opposite of left (speed -1000 to 1000)
+        ao(); //All off
+    }
+
 
 
 //Clamp is defined
@@ -123,7 +124,7 @@ void load_cam(char* name, int logitech) {
 }
 
 
-
+//Rotate_till
 int rotate_till(int channel, int size, int resolution, int direction) { //direction is 1 (Right) or 0 (Left)
     cmpc(0);
     direction = clamp(direction, -1, 1);
